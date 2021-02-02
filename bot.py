@@ -4,8 +4,7 @@ from DataBase.database import DataBase
 
 bot = telebot.TeleBot(config.TOKEN)
 database = DataBase(
-    db_user = config.DB_USER,
-    db_password = config.DB_PASSWORD,
+    connection_string = f'mongodb+srv://{config.DB_USER}:{config.DB_PASSWORD}@cluster0.gafny.mongodb.net/{config.DB_NAME}?retryWrites=true&w=majority',
     db_name = config.DB_NAME,
 )
 

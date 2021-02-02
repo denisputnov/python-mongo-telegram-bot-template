@@ -14,15 +14,14 @@ class DataBase:
     - get_subscription_stats()
     """
 
-    def __init__(self, db_user, db_password, db_name):
-        self._cluster = MongoClient(f'mongodb+srv://{db_user}:{db_password}@cluster0.gafny.mongodb.net/{db_name}?retryWrites=true&w=majority')
+    def __init__(self, connection_string, db_name):
+        self._cluster = MongoClient(connection_string)
         self._db = self._cluster[db_name]
 
         self._users_collection = self._db['users']
 
-        self._db_user = db_user
-        self._db_password = db_password
         self._db_name = db_name
+
         print('db inited successfully')
     
 
@@ -149,7 +148,11 @@ class DataBase:
         return users list with all data from collection[users]
         list(dict(), dict(), dict(),...)
         """
-        return list(self._users_collection.find())
+        try:
+            return list(self._users_collection.find())
+
+        except Exception as error:
+            print(error)
     
 
     def get_subscribed_users_data(self):
@@ -157,8 +160,12 @@ class DataBase:
         return users list with all data from collection[users] for subscriber users [isSubscribed == True]
         list(dict(), dict(), dict(),...)
         """
-        users = self.get_all_users_data()
-        return [user for user in users if user['isSubscribed'] == True]
+        try: 
+            users = self.get_all_users_data()
+            return [user for user in users if user['isSubscribed'] == True]
+
+        except Exception as error:
+            print(error)
 
 
     def get_all_users_identificators(self): 
@@ -166,8 +173,12 @@ class DataBase:
         return list with only users identificators from collection[users]
         lust(int, int, int,...)
         """
-        users = list(self._users_collection.find())
-        return [user['_id'] for user in users]
+        try: 
+            users = list(self._users_collection.find())
+            return [user['_id'] for user in users]
+
+        except Exception as error:
+            print(error)
 
 
     def get_subscribed_users_identificators(self):
@@ -175,8 +186,12 @@ class DataBase:
         return list with only users identificators from collection[users] for subscriber users [isSubscribed == True]
         lust(int, int, int,...)
         """
-        users = self.get_all_users_data()
-        return [user['_id'] for user in users if user['isSubscribed'] == True]
+        try:
+            users = self.get_all_users_data()
+            return [user['_id'] for user in users if user['isSubscribed'] == True]
+
+        except Exception as error:
+            print(error)
 
 
     def get_subscription_stats(self):
@@ -187,12 +202,16 @@ class DataBase:
             'total': [int] total amount of interacted users,
         }
         """
-        users = self.get_all_users_data()
-        subscribed = len([user for user in users if user['isSubscribed'] == True])
-        total = len(users)
+        try: 
+            users = self.get_all_users_data()
+            subscribed = len([user for user in users if user['isSubscribed'] == True])
+            total = len(users)
 
-        return {
-            'percentage': subscribed / total,
-            'subscribed': subscribed,
-            'total': total,
-        }
+            return {
+                'percentage': subscribed / total,
+                'subscribed': subscribed,
+                'total': total,
+            }
+
+        except Exception as error:
+            print(error)
